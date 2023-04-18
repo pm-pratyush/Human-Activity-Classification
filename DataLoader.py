@@ -1,11 +1,13 @@
 # Import all the required libraries
 import os
+import tqdm
+import shutil
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Load data
+# Create a list of files from which data is to be loaded
 list_of_files = ['PAMAP2_Dataset/Protocol/subject101.dat',
                  'PAMAP2_Dataset/Protocol/subject102.dat',
                  'PAMAP2_Dataset/Protocol/subject103.dat',
@@ -16,6 +18,7 @@ list_of_files = ['PAMAP2_Dataset/Protocol/subject101.dat',
                  'PAMAP2_Dataset/Protocol/subject108.dat',
                  'PAMAP2_Dataset/Protocol/subject109.dat']
 
+# Create a dictionary to store the activity ID and its corresponding activity
 activityIDdict = {0: 'transient',
               1: 'lying',
               2: 'sitting',
@@ -36,6 +39,7 @@ activityIDdict = {0: 'transient',
               20: 'playing_soccer',
               24: 'rope_jumping' }
 
+# Create a list of column names: Total 54 columns
 colNames = ["timestamp", "activityID","heartrate"]
 
 IMUhand = ['handTemperature', 
@@ -61,29 +65,34 @@ IMUankle = ['ankleTemperature',
 
 columns = colNames + IMUhand + IMUchest + IMUankle
 
-# Create a function to load data and store in different csv files
-def load_data():
-    # Create a folder to store the csv files
-    csv_folder = 'PAMAP2_Dataset/CSV'
-    if not os.path.exists(csv_folder):
-        os.makedirs(csv_folder)
+# Create a function to load data and store in a single csv file
+def convert_data_to_csv(folder):
+    if len(os.listdir(folder)) == 0:
+        print('\nConverting data to csv files...')
+        # Store the data in a different csv file for each subject
+        for file in tqdm.tqdm(list_of_files):
+            # Read the data from the file
+            data = pd.read_csv(file, sep = ' ', header = None)
+            # Assign the column names
+            data.columns = columns
+            data.to_csv(folder + '/' + file.split('/')[-1].split('.')[0] + '.csv', index = False)
 
-        for file in list_of_files:
-            df = pd.read_csv(file, delim_whitespace=True, header=None)
-            df.columns = columns
-            df = df.dropna()
-            df = df.reset_index(drop=True)
-            df['activity'] = df['activityID'].map(activityIDdict)
-            df = df.drop(['activityID'], axis=1)
-            df.to_csv('PAMAP2_Dataset/CSV/' + file.split('/')[2].split('.')[0] + '.csv', index=False)
+        print('Data converted to csv files successfully!!!')
+        delete_folder()
+    else:
+        print('Data Folder already exists!!!')
+        delete_folder()
 
-# Combine all the csv files into one csv file
-def combine_data():
-    # Create a folder to store the combined csv file
-    combined_folder = 'PAMAP2_Dataset/Combined'
-    if not os.path.exists(combined_folder):
-        os.makedirs(combined_folder)
+def delete_folder(folder = 'PAMAP2_Dataset'):
+    if os.path.exists(folder):
+        shutil.rmtree(folder)
+        print('\n' + folder + ' folder deleted successfully!!!')
 
-        # Combine all the csv files into one csv file
-        combined_csv = pd.concat([pd.read_csv(f) for f in list_of_files])
-        combined_csv.to_csv('PAMAP2_Dataset/Combined/combined.csv', index=False)
+def load_data(folder = 'data'):
+    # Load all data from all csv files
+    print('\nLoading data...')
+
+    data = pd.DataFrame()
+    for file in tqdm.tqdm(os.listdir(folder)):
+        data = data.append(pd.read_csv(folder + '/' + file))
+    return data

@@ -18,13 +18,20 @@ def main():
     results_folder = 'results'
     if not os.path.exists(results_folder):
         os.makedirs(results_folder)
+    # Create a folder to store the data in CSV format
+    data_folder = 'data'
+    if not os.path.exists(data_folder):
+        os.makedirs(data_folder)
 
-    # Load data and save it as a csv file
-    load_data()
-    # Combine all the csv files into one csv file
-    combine_data()
-    # Clean the data
-    clean_data()
+    # Step 1: Convert the data to CSV format
+    convert_data_to_csv(data_folder)
+
+    # Step 2: Load the data into a pandas dataframe
+    dataCollection = load_data(data_folder)
+    print("Data loaded successfully into a pandas dataframe !!!")
+    print(dataCollection.head())
+    
+    # Step 3: Clean the data
 
 # Call the main function
 if __name__ == '__main__':
