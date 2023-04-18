@@ -65,10 +65,15 @@ IMUankle = ['ankleTemperature',
 
 columns = colNames + IMUhand + IMUchest + IMUankle
 
-# Create a function to load data and store in a single csv file
 def convert_data_to_csv(folder):
-    if len(os.listdir(folder)) == 0:
-        print('\nConverting data to csv files...')
+    # CHeck if there are 9 files in the folder starting with 'subject' and ending with '.csv'
+    if (len(os.listdir(folder)) == 9) and (all([file.startswith('subject') and file.endswith('.csv') for file in os.listdir(folder)])):
+        return
+    else:
+        # Delete all the files from the folder
+        for file in os.listdir(folder):
+            os.remove(folder + '/' + file)
+
         # Store the data in a different csv file for each subject
         for file in tqdm.tqdm(list_of_files):
             # Read the data from the file
@@ -77,11 +82,7 @@ def convert_data_to_csv(folder):
             data.columns = columns
             data.to_csv(folder + '/' + file.split('/')[-1].split('.')[0] + '.csv', index = False)
 
-        print('Data converted to csv files successfully!!!')
-        delete_folder()
-    else:
-        print('Data Folder already exists!!!')
-        delete_folder()
+    delete_folder()
 
 def delete_folder(folder = 'PAMAP2_Dataset'):
     if os.path.exists(folder):
@@ -90,9 +91,20 @@ def delete_folder(folder = 'PAMAP2_Dataset'):
 
 def load_data(folder = 'data'):
     # Load all data from all csv files
-    print('\nLoading data...')
-
     data = pd.DataFrame()
     for file in tqdm.tqdm(os.listdir(folder)):
         data = data.append(pd.read_csv(folder + '/' + file))
     return data
+
+def write_data_to_csv(train_X, train_y, test_X, test_y, folder = 'data'):
+    if not os.path.exists(folder):
+        os.mkdir(folder)
+    else:
+        # Remove all the files from the folder
+        for file in os.listdir(folder):
+            os.remove(folder + '/' + file)
+
+    train_X.to_csv(folder + '/' + 'train_X.csv', index = False)
+    train_y.to_csv(folder + '/' + 'train_y.csv', index = False)
+    test_X.to_csv(folder + '/' + 'test_X.csv', index = False)
+    test_y.to_csv(folder + '/' + 'test_y.csv', index = False)

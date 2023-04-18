@@ -6,12 +6,40 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Define a function to clean data
-def clean_data():
-    dataCollection = dataCollection.drop(['handOrientation1', 'handOrientation2', 'handOrientation3', 'handOrientation4',
-                                             'chestOrientation1', 'chestOrientation2', 'chestOrientation3', 'chestOrientation4',
-                                             'ankleOrientation1', 'ankleOrientation2', 'ankleOrientation3', 'ankleOrientation4'],
-                                             axis = 1)  # removal of orientation columns as they are not needed
-    dataCollection = dataCollection.drop(dataCollection[dataCollection.activityID == 0].index) #removal of any row of activity 0 as it is transient activity which it is not used
-    dataCollection = dataCollection.apply(pd.to_numeric, errors = 'coerse') #removal of non numeric data in cells
-    dataCollection = dataCollection.interpolate() #removal of any remaining NaN value cells by constructing new data points in known set of data points
-        
+def clean_data(data):
+    data = data.dropna()
+    data = data.reset_index(drop=True)
+
+    # Remove certain columns
+    data = data.drop(['timestamp'], axis=1)
+    # Remove the orientation columns
+    data = data.drop(['handOrientation1', 'handOrientation2', 'handOrientation3', 'handOrientation4'], axis=1)
+    data = data.drop(['chestOrientation1', 'chestOrientation2', 'chestOrientation3', 'chestOrientation4'], axis=1)
+    data = data.drop(['ankleOrientation1', 'ankleOrientation2', 'ankleOrientation3', 'ankleOrientation4'], axis=1)
+
+    # For the heart rate, fill missing values with the just previous value
+    data['heartrate'] = data['heartrate'].fillna(method='ffill')
+
+    # For any other missing values, fill them with last value
+    data = data.fillna(method='ffill')
+
+    # Normalize the data
+    data = (data - data.mean()) / data.std()
+
+    # Shuffle the data
+    data = data.sample(frac=1).reset_index(drop=True)
+    return data
+
+# Split the data into train and test
+def split_data(data):
+    # Split the data into train and test
+    train = data.sample(frac=0.8, random_state=200)
+    test = data.drop(train.index)
+
+    # Split the train and test data into features and labels
+    train_X = train.drop(['activityID'], axis=1)
+    train_Y = train['activityID']
+    test_X = test.drop(['activityID'], axis=1)
+    test_Y = test['activityID']
+    
+    return train_X, train_Y, test_X, test_Y
