@@ -24,7 +24,7 @@ def clean_data(data):
     data = data.fillna(method='ffill')
 
     # Normalize the data
-    data = (data - data.mean()) / data.std()
+    # data = (data - data.mean()) / data.std()
 
     # Shuffle the data
     data = data.sample(frac=1).reset_index(drop=True)
@@ -41,5 +41,9 @@ def split_data(data):
     train_Y = train['activityID']
     test_X = test.drop(['activityID'], axis=1)
     test_Y = test['activityID']
+
+    # normalize train and test data
+    train_X = (train_X - train_X.mean()) / train_X.std()
+    test_X = (test_X - test_X.mean()) / test_X.std()
     
     return train_X, train_Y, test_X, test_Y
