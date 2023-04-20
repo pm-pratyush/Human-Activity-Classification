@@ -17,14 +17,21 @@ def clean_data(data):
     data = data.drop(['chestOrientation1', 'chestOrientation2', 'chestOrientation3', 'chestOrientation4'], axis=1)
     data = data.drop(['ankleOrientation1', 'ankleOrientation2', 'ankleOrientation3', 'ankleOrientation4'], axis=1)
 
-    # For the heart rate, fill missing values with the just previous value
-    data['heartrate'] = data['heartrate'].fillna(method='ffill')
+    # For the heart rate, fill missing values with previous timestamp's heart rate
+    data['heartRate'] = data['heartRate'].fillna(method='ffill')
 
     # For any other missing values, fill them with last value
     data = data.fillna(method='ffill')
 
     # Normalize the data
     # data = (data - data.mean()) / data.std()
+    # discard data with NaN values
+    data = data.dropna()
+    data = data.reset_index(drop=True)
+
+    # disacrd data with activityID = 0
+    data = data[data['activityID'] != 0]
+    data = data.reset_index(drop=True)
 
     # Shuffle the data
     data = data.sample(frac=1).reset_index(drop=True)
@@ -43,7 +50,7 @@ def split_data(data):
     test_Y = test['activityID']
 
     # normalize train and test data
-    train_X = (train_X - train_X.mean()) / train_X.std()
-    test_X = (test_X - test_X.mean()) / test_X.std()
+    # train_X = (train_X - train_X.mean()) / train_X.std()
+    # test_X = (test_X - test_X.mean()) / test_X.std()
     
     return train_X, train_Y, test_X, test_Y
