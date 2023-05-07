@@ -2,7 +2,7 @@
 
 ### Usage and File Structure ?
 1. Download the PAMAP2_Dataset from https://archive.ics.uci.edu/ml/datasets/PAMAP2+Physical+Activity+Monitoring
-2. Download the PAMAP2_data.csv into root/src directory from the following OneDrive Link : https://iiitaphyd-my.sharepoint.com/:x:/g/personal/divyansh_t_research_iiit_ac_in/Ed_jGsoEu4tPhAmLhMebrykB6cOKKqFh2XBfDsefnY5dqw?e=uhGMOT
+2. Download the PAMAP2_data.csv into root/src directory from the following OneDrive Link : https://iiitaphyd-my.sharepoint.com/:f:/g/personal/divyansh_t_research_iiit_ac_in/EhHLy69jD4xHqiqZc_FZlrIBl9JDPdDgHOvXD7y1HzbF6A?e=YOjACc
    (Data required in a particular format for running Project_Trees.ipynb and Project_NN.ipynb)
 3. Make sure to place the PAMAP2_data.csv in the root/src directory (in the same directory as the Project_Trees.ipynb and Project_NN.ipynb)
 4. Run the 'main.py' file in the root directory using the following command:
