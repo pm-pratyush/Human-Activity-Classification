@@ -1,4 +1,6 @@
 # HUMAN ACTIVITY CLASSIFICATION
+## Slides 
+https://drive.google.com/file/d/10wdNs44kHGGQ94X5zTZvtYB06YTe1lmD/view?usp=sharing
 
 ### Usage and File Structure ?
 1. Download the PAMAP2_Dataset from https://archive.ics.uci.edu/ml/datasets/PAMAP2+Physical+Activity+Monitoring
